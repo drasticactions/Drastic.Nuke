@@ -46,21 +46,21 @@ namespace Drastic.Nuke
 		[Export ("loadImageWithUrl:onCompleted:")]
 		void LoadImageWithUrl (NSUrl url, Action<NSImage, NSString> onCompleted);
 
-		// -(void)loadImageWithUrl:(NSURL * _Nonnull)url placeholder:(NSImage * _Nullable)placeholder errorImage:(NSImage * _Nullable)errorImage into:(NSImageView * _Nonnull)into;
-		[Export ("loadImageWithUrl:placeholder:errorImage:into:")]
-		void LoadImageWithUrl (NSUrl url, [NullAllowed] NSImage placeholder, [NullAllowed] NSImage errorImage, NSImageView into);
+		// -(void)loadImageWithUrl:(NSURL * _Nonnull)url placeholder:(NSImage * _Nullable)placeholder errorImage:(NSImage * _Nullable)errorImage imageProxyTransition:(ProxyTransitionOptions * _Nullable)imageProxyTransition failedImageProxyTransition:(ProxyTransitionOptions * _Nullable)failedImageProxyTransition into:(NSImageView * _Nonnull)into;
+		[Export ("loadImageWithUrl:placeholder:errorImage:imageProxyTransition:failedImageProxyTransition:into:")]
+		void LoadImageWithUrl (NSUrl url, [NullAllowed] NSImage placeholder, [NullAllowed] NSImage errorImage, [NullAllowed] ProxyTransitionOptions imageProxyTransition, [NullAllowed] ProxyTransitionOptions failedImageProxyTransition, NSImageView into);
 
-		// -(void)loadImageWithUrl:(NSURL * _Nonnull)url imageIdKey:(NSString * _Nonnull)imageIdKey placeholder:(NSImage * _Nullable)placeholder errorImage:(NSImage * _Nullable)errorImage into:(NSImageView * _Nonnull)into;
-		[Export ("loadImageWithUrl:imageIdKey:placeholder:errorImage:into:")]
-		void LoadImageWithUrl (NSUrl url, string imageIdKey, [NullAllowed] NSImage placeholder, [NullAllowed] NSImage errorImage, NSImageView into);
+		// -(void)loadImageWithUrl:(NSURL * _Nonnull)url imageIdKey:(NSString * _Nonnull)imageIdKey placeholder:(NSImage * _Nullable)placeholder errorImage:(NSImage * _Nullable)errorImage imageProxyTransition:(ProxyTransitionOptions * _Nullable)imageProxyTransition failedImageProxyTransition:(ProxyTransitionOptions * _Nullable)failedImageProxyTransition into:(NSImageView * _Nonnull)into;
+		[Export ("loadImageWithUrl:imageIdKey:placeholder:errorImage:imageProxyTransition:failedImageProxyTransition:into:")]
+		void LoadImageWithUrl (NSUrl url, string imageIdKey, [NullAllowed] NSImage placeholder, [NullAllowed] NSImage errorImage, [NullAllowed] ProxyTransitionOptions imageProxyTransition, [NullAllowed] ProxyTransitionOptions failedImageProxyTransition, NSImageView into);
 
 		// -(void)loadDataWithUrl:(NSURL * _Nonnull)url onCompleted:(void (^ _Nonnull)(NSData * _Nullable, NSURLResponse * _Nullable))onCompleted;
 		[Export ("loadDataWithUrl:onCompleted:")]
-		void LoadDataWithUrl (NSUrl url, Action<NSData, NSUrlResponse> onCompleted);
+		void LoadDataWithUrl (NSUrl url, Action<NSData, Foundation.NSUrlResponse> onCompleted);
 
 		// -(void)loadDataWithUrl:(NSURL * _Nonnull)url imageIdKey:(NSString * _Nullable)imageIdKey reloadIgnoringCachedData:(BOOL)reloadIgnoringCachedData onCompleted:(void (^ _Nonnull)(NSData * _Nullable, NSURLResponse * _Nullable))onCompleted;
 		[Export ("loadDataWithUrl:imageIdKey:reloadIgnoringCachedData:onCompleted:")]
-		void LoadDataWithUrl (NSUrl url, [NullAllowed] string imageIdKey, bool reloadIgnoringCachedData, Action<NSData, NSUrlResponse> onCompleted);
+		void LoadDataWithUrl (NSUrl url, [NullAllowed] string imageIdKey, bool reloadIgnoringCachedData, Action<NSData, Foundation.NSUrlResponse> onCompleted);
 	}
 
 	// @interface Prefetcher : NSObject
@@ -86,5 +86,16 @@ namespace Drastic.Nuke
 		// -(void)unPause;
 		[Export ("unPause")]
 		void UnPause ();
+	}
+
+	// @interface ProxyTransitionOptions : NSObject
+	[BaseType (typeof(NSObject))]
+	[DisableDefaultCtor]
+	interface ProxyTransitionOptions
+	{
+		// +(ProxyTransitionOptions * _Nonnull)generateWithStyleTransition:(enum StyleTransition)styleTransition duration:(NSTimeInterval)duration __attribute__((warn_unused_result("")));
+		[Static]
+		[Export ("generateWithStyleTransition:duration:")]
+		ProxyTransitionOptions GenerateWithStyleTransition (StyleTransition styleTransition, double duration);
 	}
 }

@@ -22,6 +22,14 @@ FRAMEWORKS_IOS=$(ROOT)/Frameworks/ios
 FRAMEWORKS_MAC=$(ROOT)/Frameworks/mac
 FRAMEWORKS_TVOS=$(ROOT)/Frameworks/tvos
 
+all: build_nuke build_nuke_extensions build_nuke_ui build_nuke_proxy
+
+binding-mac:
+	sharpie bind --sdk=macosx13.0 --output="$(BUILD_PROXY_ROOT)/XamarinApiDef" --namespace="Drastic.Nuke" --scope="$(BUILD_PROXY_ROOT)/mac_proxy.xcarchive/$(FRAMEWORK_PROXY_PATH)/Headers/" "$(BUILD_PROXY_ROOT)/mac_proxy.xcarchive/$(FRAMEWORK_PROXY_PATH)/Headers/NukeProxy-Swift.h"
+
+binding-ios:
+	sharpie bind --sdk=iphoneos16.1 --output="$(BUILD_PROXY_ROOT)/XamarinApiDef" --namespace="Drastic.Nuke" --scope="$(BUILD_PROXY_ROOT)/simulator_proxy.xcarchive/$(FRAMEWORK_PROXY_PATH)/Headers/" "$(BUILD_PROXY_ROOT)/simulator_proxy.xcarchive/$(FRAMEWORK_PROXY_PATH)/Headers/NukeProxy-Swift.h"
+
 build_nuke: build_nuke_watchossimulator build_nuke_watchosdevice build_nuke_iossimulator build_nuke_iosdevice build_nuke_maccatalyst build_nuke_tvossimulator build_nuke_tvosdevice build_nuke_mac build_nuke_xcframework
 
 build_nuke_extensions: build_nuke_extensions_watchossimulator build_nuke_extensions_watchosdevice build_nuke_extensions_iossimulator build_nuke_extensions_iosdevice build_nuke_extensions_maccatalyst build_nuke_extensions_tvossimulator build_nuke_extensions_tvosdevice build_nuke_extensions_mac build_nuke_extensions_xcframework

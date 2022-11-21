@@ -44,15 +44,39 @@ public class ImagePipeline : NSObject {
     
     @objc
     @MainActor
-    public func loadImage(url: URL, placeholder: CrossPlatformImage?, errorImage: CrossPlatformImage?, into: CrossPlatformImageView) {
-        let options = ImageLoadingOptions(placeholder:placeholder, failureImage: errorImage)
+    public func loadImage(url: URL, placeholder: CrossPlatformImage?, errorImage: CrossPlatformImage?, imageProxyTransition: ProxyTransitionOptions?, failedImageProxyTransition: ProxyTransitionOptions?, into: CrossPlatformImageView) {
+        var imageTransition: ImageLoadingOptions.Transition? = nil
+        var failedImageTransition: ImageLoadingOptions.Transition? = nil
+        
+        if imageProxyTransition != nil {
+            imageTransition = generateTransitionOptions(options: imageProxyTransition!)
+        }
+        
+        if failedImageProxyTransition != nil {
+            failedImageTransition = generateTransitionOptions(options: failedImageProxyTransition!)
+        }
+        
+        let options = ImageLoadingOptions(placeholder:placeholder, transition: imageTransition, failureImage: errorImage, failureImageTransition: failedImageTransition)
+        
         NukeExtensions.loadImage(with: url, options: options, into: into)
     }
     
     @objc
     @MainActor
-    public func loadImage(url: URL, imageIdKey: String, placeholder: CrossPlatformImage?, errorImage: CrossPlatformImage?, into: CrossPlatformImageView) {
-        let options = ImageLoadingOptions(placeholder: placeholder, failureImage: errorImage)
+    public func loadImage(url: URL, imageIdKey: String, placeholder: CrossPlatformImage?, errorImage: CrossPlatformImage?, imageProxyTransition: ProxyTransitionOptions?, failedImageProxyTransition: ProxyTransitionOptions?, into: CrossPlatformImageView) {
+
+        var imageTransition: ImageLoadingOptions.Transition? = nil
+        var failedImageTransition: ImageLoadingOptions.Transition? = nil
+        
+        if imageProxyTransition != nil {
+            imageTransition = generateTransitionOptions(options: imageProxyTransition!)
+        }
+        
+        if failedImageProxyTransition != nil {
+            failedImageTransition = generateTransitionOptions(options: failedImageProxyTransition!)
+        }
+        
+        let options = ImageLoadingOptions(placeholder:placeholder, transition: imageTransition, failureImage: errorImage, failureImageTransition: failedImageTransition)
         
         NukeExtensions.loadImage(with: ImageRequest(
             url: url,
@@ -82,6 +106,27 @@ public class ImagePipeline : NSObject {
                 }
             }
         )
+    }
+    
+    func generateTransitionOptions(options: ProxyTransitionOptions) -> ImageLoadingOptions.Transition {
+#if !os(macOS)
+        switch options.styleTransition {
+            case .fadeIn:
+            if (options.options != nil)
+            {
+                return ImageLoadingOptions.Transition.fadeIn(duration: options.duration, options: options.options!)
+            }
+            else
+            {
+                return ImageLoadingOptions.Transition.fadeIn(duration: options.duration)
+            }
+        }
+#else
+        switch options.styleTransition {
+            case .fadeIn:
+            return ImageLoadingOptions.Transition.fadeIn(duration: options.duration)
+        }
+#endif
     }
 }
 
@@ -138,4 +183,51 @@ public final class Prefetcher: NSObject {
     public func unPause() {
         prefetcher.isPaused = false
     }
+}
+
+@objc(ProxyTransitionOptions)
+public final class ProxyTransitionOptions: NSObject {
+    var styleTransition: StyleTransition
+    var duration: TimeInterval
+#if !os(macOS)
+    var options: UIView.AnimationOptions?
+    
+    @objc
+    init(styleTransition: StyleTransition, duration: TimeInterval, options: UIView.AnimationOptions) {
+        self.styleTransition = styleTransition
+        self.duration = duration
+        self.options = options
+    }
+    
+    @objc
+    init(styleTransition: StyleTransition, duration: TimeInterval) {
+        self.styleTransition = styleTransition
+        self.duration = duration
+        self.options = UIView.AnimationOptions.allowUserInteraction
+    }
+    
+    @objc
+    public static func generate(styleTransition: StyleTransition, duration: TimeInterval, options: UIView.AnimationOptions) -> ProxyTransitionOptions
+    {
+        return ProxyTransitionOptions(styleTransition: styleTransition, duration: duration, options: options)
+    }
+    
+#else
+    @objc
+    init(styleTransition: StyleTransition, duration: TimeInterval) {
+        self.styleTransition = styleTransition
+        self.duration = duration
+    }
+#endif
+    
+    @objc
+    public static func generate(styleTransition: StyleTransition, duration: TimeInterval) -> ProxyTransitionOptions
+    {
+        return ProxyTransitionOptions(styleTransition: styleTransition, duration: duration)
+    }
+}
+
+@objc(StyleTransition)
+public enum StyleTransition : Int {
+    case fadeIn
 }
