@@ -1,4 +1,4 @@
-[![NuGet Version](https://img.shields.io/nuget/v/Drastic.SDWebImage.svg)](https://www.nuget.org/packages/Drastic.SDWebImage/) ![License](https://img.shields.io/badge/License-MIT-blue.svg)
+[![NuGet Version](https://img.shields.io/nuget/v/Drastic.Nuke.svg)](https://www.nuget.org/packages/Drastic.Nuke/) ![License](https://img.shields.io/badge/License-MIT-blue.svg)
 
 # Drastic.Nuke
 
